@@ -3,7 +3,7 @@ const ctx = canvas.getContext("2d");
 
 
 class Road{
-    constructor(x = canvas.width / 2, y = canvas.height / 2, outerR = 290, innerR = 120, lane = 2){
+    constructor(x = canvas.width / 2, y = canvas.height / 2, outerR = 290, innerR = 150, lane = 2){
         this.centerX = x;
         this.centerY = y;
         this.outerRadius = outerR; // Outer radius of the road
@@ -30,8 +30,7 @@ class Road{
       ctx.fillStyle = "pink"; // Road color
       ctx.fill();
       ctx.stroke();
-
-      //divider
+      
       ctx.setLineDash([20, 20]); 
       ctx.beginPath();
       ctx.arc(this.centerX, this.centerY, this.laneDivider, 0, 2 * Math.PI);
