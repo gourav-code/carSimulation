@@ -1,54 +1,50 @@
 class Road{
-    constructor(x, width, laneCount = 3){
-        this.x = x;
-        this.width = width;
-        this.laneCount = laneCount;
-
-        this.leftBoundary = this.x-width/2;
-        this.rightBoundary = this.x+width/2;
-
-        const infinity = 1000000;
-        this.topBoundary = -infinity;
-        this.bottomBoundary = infinity;
-
-        const topLeft = {x:this.leftBoundary, y:this.topBoundary};
-        const topRight = {x:this.rightBoundary, y:this.topBoundary};
-        const bottomLeft = {x:this.leftBoundary, y:this.bottomBoundary};
-        const bottomRight = {x:this.rightBoundary, y:this.bottomBoundary};
-
+    constructor(x, y, outerR = 250, innerR = 150, lane = 2){
+        this.centerX = x;
+        this.centerY = y;
+        this.outerRadius = outerR; // Outer radius of the road
+        this.innerRadius = innerR; // Inner radius of the road
+        this.width = this.outerRadius - this.innerRadius;
+        this.laneCount = lane;
+        this.laneDivider = this.width/2 + this.innerRadius;
         this.border = [
-            [topLeft, bottomLeft],
-            [topRight, bottomRight]
+            [this.centerX, this.centerY, this.outerRadius] , 
+            [this.centerX, this.centerY, this.innerRadius]
         ];
-
     }
-    getLaneCenter(index){
+
+    getLaneCenter(index, theta){
         const laneWidth = this.width/this.laneCount;
-        return this.leftBoundary + laneWidth/2 + laneWidth*index;
+        const laneCenterRadius = this.innerRadius + laneWidth/2 + (index%2)* laneWidth;
+
+        return {y: this.centerY - laneCenterRadius*Math.cos(theta*Math.PI/100), x: this.centerX - laneCenterRadius*Math.sin(theta*Math.PI/100)}
     }
 
-    draw(context){
-        context.lineWidth = 5;
-        context.strokeStyle = "white";
+    draw(ctx){
+      ctx.lineWidth = 2;
+      ctx.strokeStyle = "white";
 
-        for(let i = 1; i<= this.laneCount-1; ++i){
-            const tmp = this.leftBoundary + (this.rightBoundary-this.leftBoundary)*(i/this.laneCount);  //lerp Function
-            context.setLineDash([20, 20]);    //[pixel, pixel], [line, gap]
-            context.beginPath();
-            context.moveTo(tmp, this.topBoundary);
-            context.lineTo(tmp, this.bottomBoundary);
-            context.stroke();
-        }
+      
+      // Draw the outer circle
+      ctx.beginPath();
+      ctx.arc(this.centerX, this.centerY, this.outerRadius, 0, 2 * Math.PI);
+      ctx.fillStyle = "pink"; // Road color
+      ctx.fill();
+      ctx.stroke();
+      
+      ctx.setLineDash([20, 20]); 
+      ctx.beginPath();
+      ctx.arc(this.centerX, this.centerY, this.laneDivider, 0, 2 * Math.PI);
+      ctx.stroke();
+      ctx.setLineDash([]);
+      // Create the cut-out for the inner circle
+      ctx.globalCompositeOperation = "destination-out"; // Cut-out mode
+      ctx.beginPath();
+      ctx.arc(this.centerX, this.centerY, this.innerRadius, 0, 2 * Math.PI);
+      ctx.fill();
 
-        context.setLineDash([]);
-
-        this.border.forEach(border => {
-            context.beginPath();
-            context.moveTo(border[0].x, border[0].y);
-            context.lineTo(border[1].x, border[1].y);
-            context.stroke();
-        });
+      // Reset composite operation to default
+      ctx.globalCompositeOperation = "source-over";
 
     }
-
 }

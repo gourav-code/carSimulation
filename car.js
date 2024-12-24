@@ -8,7 +8,7 @@ class Car{
         this.maxSpeed = maxSpeed;
         this.angle = 0.00;
         this.acceleration = 0.2;
-        // this.polygon = [];
+        this.polygon = [];
         this.isDamaged = false;
         this.friction = 0.05;
         this.type = type;
@@ -22,10 +22,11 @@ class Car{
         
         this.control = new Control(type);
     }
-    update(roadBorder, traffic){
-        
+    update(roadBorder, traffic = []){
+        // console.log("hiUpdateCar");
         if(!this.isDamaged){
             this.#move();
+            // console.log("hi");
             this.polygon = this.#getCorner();
             this.isDamaged = this.#getDamaged(roadBorder, traffic);
         }        
@@ -42,18 +43,18 @@ class Car{
 
         }
     }
-    #getDamaged(roadBorder, traffic){
+    #getDamaged(roadBorder, traffic = []){
         
         for (let i=0; i< roadBorder.length; ++i){
-            if(polysIntersect(this.polygon, roadBorder[i])){
+            if(polyRoadIntersect(this.polygon, roadBorder[i])){
                 return true ;
             }
         }
-        for (let j =0;j<traffic.length;++j){
-            if(polysIntersect(this.polygon, traffic[j].polygon)){
-                return true ;
-            }
-        }
+        // for (let j =0;j<traffic.length;++j){
+        //     if(polysIntersect(this.polygon, traffic[j].polygon)){
+        //         return true ;
+        //     }
+        // }
         return false;
     }
     
@@ -61,28 +62,35 @@ class Car{
         const points = [];
         const radius = Math.hypot(this.width, this.height)*0.5;
         const alpha = Math.atan2(this.width, this.height);
+        // Top-right corner
         points.push({
-            x: this.x - Math.sin(this.angle - alpha)*radius,
-            y: this.y - Math.cos(this.angle - alpha)*radius
-        });
-        points.push({
-            x: this.x - Math.sin(this.angle + alpha)*radius,
-            y: this.y - Math.cos(this.angle + alpha)*radius
+            x: this.x + Math.sin(alpha - this.angle) * radius,
+            y: this.y - Math.cos(alpha - this.angle) * radius,
         });
 
+        // Top-left corner
         points.push({
-            x: this.x - Math.sin(Math.PI + this.angle - alpha)*radius,
-            y: this.y - Math.cos(Math.PI + this.angle - alpha)*radius
+            x: this.x + Math.sin(Math.PI - alpha - this.angle) * radius,
+            y: this.y - Math.cos(Math.PI - alpha - this.angle) * radius,
         });
+
+        // Bottom-left corner
         points.push({
-            x: this.x - Math.sin(Math.PI + this.angle + alpha)*radius,
-            y: this.y - Math.cos(Math.PI + this.angle + alpha)*radius
+            x: this.x + Math.sin(Math.PI + alpha - this.angle) * radius,
+            y: this.y - Math.cos(Math.PI + alpha - this.angle) * radius,
+        });
+
+        // Bottom-right corner
+        points.push({
+            x: this.x + Math.sin(-alpha - this.angle) * radius,
+            y: this.y - Math.cos(-alpha - this.angle) * radius,
         });
 
         return points;
     }
 
     #move(){
+        // console.log("hiMove");
         if(this.control.forward){
             this.speed += this.acceleration;
         }
@@ -117,16 +125,12 @@ class Car{
             context.fillStyle = color;
         }
         context.beginPath();
+        // console.log(this.polygon);
         context.moveTo(this.polygon[0].x, this.polygon[0].y);
         for (let i=1; i<this.polygon.length; ++i){
             context.lineTo(this.polygon[i].x, this.polygon[i].y);
         }
-        // context.fillStyle = "red"; 
-        // if (this.type == "KEY"){
-        //     // console.log(initialCarPosition);
-        //     // console.log(this.x, this.y);
-        //     this.carDistance = distance(initialCarPosition, this);
-        // }
+
         context.fill();
         if (this.sensor && sensorDraw){
             this.sensor.draw(context);

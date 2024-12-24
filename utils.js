@@ -2,13 +2,16 @@ function lerp( a, b, t){
     return a + (b-a)*t;
 }
 function distance(fixedPoint, carPoint){
-    return -1*((fixedPoint.y - carPoint.y)**2 + (fixedPoint.x - carPoint.x)**2);   
+    return Math.sqrt((fixedPoint[0] - carPoint[0])**2 + (fixedPoint[1] - carPoint[1])**2);   
 }
 
-function lineSegmentCircleIntersection(p1, p2, h, k, radius) {
+function lineSegmentCircleIntersection(p1, p2, circle) {
     // Line segment direction vector
     const dx = p2.x - p1.x;
     const dy = p2.y - p1.y;
+    const h = circle[0];
+    const k = circle[1];
+    const radius = circle[2];
   
     // Quadratic coefficients
     const A = dx * dx + dy * dy;
@@ -20,32 +23,44 @@ function lineSegmentCircleIntersection(p1, p2, h, k, radius) {
   
     if (discriminant < 0) {
       // No intersection
-      return [];
+      return null;
     }
-  
+    
+    // const dist1 = distance([p1.y, p1.x], [h,k]);
+    // const dist2 = distance([p2.y, p2.x], [h,k]);
     // Calculate t values for intersection points
     const t1 = (-B - Math.sqrt(discriminant)) / (2 * A);
     const t2 = (-B + Math.sqrt(discriminant)) / (2 * A);
   
-    const points = [];
+    
   
     // Check if t1 is within the segment
     if (t1 >= 0 && t1 <= 1) {
-      points.push({
-        x: x1 + t1 * dx,
-        y: y1 + t1 * dy,
-      });
+        const intersectPoint = {
+            x: p1.x + t1 * dx,
+            y: p1.y + t1 * dy,
+        }
+        return {
+            x: intersectPoint.x,
+            y: intersectPoint.y,
+            offset: distance([intersectPoint.x,intersectPoint.y], [p1.x, p1.y])
+        };
     }
   
     // Check if t2 is within the segment
     if (t2 >= 0 && t2 <= 1) {
-      points.push({
-        x: x1 + t2 * dx,
-        y: y1 + t2 * dy,
-      });
+        const intersectPoint = {
+            x: p1.x + t2 * dx,
+            y: p1.y + t2 * dy,
+        }
+        return {
+            x: intersectPoint.x,
+            y: intersectPoint.y,
+            offset: distance([intersectPoint.x,intersectPoint.y], [p1.x, p1.y])
+        };
     }
   
-    return points;
+    return null;
 }
 
 function getIntersection(A,B,C,D){ 
@@ -66,6 +81,19 @@ function getIntersection(A,B,C,D){
     }
 
     return null;
+}
+
+function polyRoadIntersect(poly1, roadBorder){
+    for(let i=0; i< poly1.length; ++i){
+        if (lineSegmentCircleIntersection(
+            poly1[i], poly1[(i+1)%poly1.length],
+            roadBorder
+        )){
+            return true;
+        }
+    }
+
+    return false;
 }
 
 function polysIntersect(poly1, poly2){

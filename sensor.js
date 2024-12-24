@@ -20,9 +20,9 @@ class Sensor{
     #getreading(ray, roadBorders, traffic){
         let touches = [];
         for (let i=0; i< roadBorders.length; ++i){
-            const touch = getIntersection(
+            const touch = lineSegmentCircleIntersection(
                 ray[0], ray[1],
-                roadBorders[i][0], roadBorders[i][1]
+                roadBorders[i]
             );
             if (touch){
                 // console.log(touch);

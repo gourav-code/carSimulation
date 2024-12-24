@@ -9,6 +9,8 @@ class Control{
             this.#addKeyboardListeners();
         } else{
             this.forward = true;
+            this.left = true;
+            this.right = true;
         }
         
     }
