@@ -1,5 +1,5 @@
 class Road{
-    constructor(x, y, outerR = 250, innerR = 150, lane = 2){
+    constructor(x, y, outerR = 250, innerR = 100, lane = 2){
         this.centerX = x;
         this.centerY = y;
         this.outerRadius = outerR; // Outer radius of the road
@@ -11,13 +11,16 @@ class Road{
             [this.centerX, this.centerY, this.outerRadius] , 
             [this.centerX, this.centerY, this.innerRadius]
         ];
+        console.log(this.centerX, this.centerY);
     }
 
     getLaneCenter(index, theta){
         const laneWidth = this.width/this.laneCount;
         const laneCenterRadius = this.innerRadius + laneWidth/2 + (index%2)* laneWidth;
 
-        return {y: this.centerY - laneCenterRadius*Math.cos(theta*Math.PI/100), x: this.centerX - laneCenterRadius*Math.sin(theta*Math.PI/100)}
+        const tmp = {y: this.centerY - laneCenterRadius*Math.cos(theta*Math.PI/180), x: this.centerX - laneCenterRadius*Math.sin(theta*Math.PI/180)}
+        console.log(tmp);
+        return tmp;
     }
 
     draw(ctx){

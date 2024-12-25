@@ -8,19 +8,20 @@ class Car{
         this.maxSpeed = maxSpeed;
         this.angle = 0.00;
         this.acceleration = 0.2;
-        this.polygon = [];
+        // this.polygon = [];
         this.isDamaged = false;
         this.friction = 0.05;
-        this.type = type;
-        this.carDistance = 0.00;
-        if (this.type == "KEY"){  
-            this.sensor = new Sensor(this);
-            this.brain = new NeuralNetwork([
-                this.sensor.rayCount, 6, 4
-            ]);
-        }
-        
+        // this.type = type;
+        // this.carDistance = 0.00;
+        // if (this.type == "KEY"){  
+        //     this.sensor = new Sensor(this);
+        //     this.brain = new NeuralNetwork([
+        //         this.sensor.rayCount, 6, 4
+        //     ]);
+        // }
+        this.sensor = new Sensor(this);
         this.control = new Control(type);
+        this.time = 1;
     }
     update(roadBorder, traffic = []){
         // console.log("hiUpdateCar");
@@ -33,13 +34,13 @@ class Car{
         //sensor
         if(this.sensor){
             this.sensor.update(roadBorder, traffic);
-            const offset = this.sensor.reading.map(tmp=> tmp==null?0:1-tmp.offset);
-            const outputs = NeuralNetwork.feedForward(offset, this.brain);
+            // const offset = this.sensor.reading.map(tmp=> tmp==null?0:1-tmp.offset);
+            // const outputs = NeuralNetwork.feedForward(offset, this.brain);
 
-            this.control.forward = outputs[0];
-            this.control.left = outputs[1];
-            this.control.right = outputs[2];
-            this.control.reverse = outputs[3];
+            // this.control.forward = outputs[0];
+            // this.control.left = outputs[1];
+            // this.control.right = outputs[2];
+            // this.control.reverse = outputs[3];
 
         }
     }
@@ -62,10 +63,11 @@ class Car{
         const points = [];
         const radius = Math.hypot(this.width, this.height)*0.5;
         const alpha = Math.atan2(this.width, this.height);
+        // console.log(radius);
         // Top-right corner
         points.push({
-            x: this.x + Math.sin(alpha - this.angle) * radius,
-            y: this.y - Math.cos(alpha - this.angle) * radius,
+            x: this.x + Math.sin( alpha - this.angle) * radius,
+            y: this.y - Math.cos( alpha - this.angle) * radius,
         });
 
         // Top-left corner
@@ -85,18 +87,39 @@ class Car{
             x: this.x + Math.sin(-alpha - this.angle) * radius,
             y: this.y - Math.cos(-alpha - this.angle) * radius,
         });
-
+        if(this.time == 1){
+            console.log(points);
+            this.time = 0;
+        }
+        
         return points;
     }
 
     #move(){
-        // console.log("hiMove");
         if(this.control.forward){
-            this.speed += this.acceleration;
+            this.speed+=this.acceleration;
         }
-        if (this.control.reverse){
-            this.speed -= this.acceleration;
+        if(this.control.reverse){
+            this.speed-=this.acceleration;
         }
+
+        if(this.speed>this.maxSpeed){
+            this.speed=this.maxSpeed;
+        }
+        if(this.speed<-this.maxSpeed/2){
+            this.speed=-this.maxSpeed/2;
+        }
+
+        if(this.speed>0){
+            this.speed-=this.friction;
+        }
+        if(this.speed<0){
+            this.speed+=this.friction;
+        }
+        if(Math.abs(this.speed)<this.friction){
+            this.speed=0;
+        }
+
         if(this.speed!=0){
             const flip=this.speed>0?1:-1;
             if(this.control.left){
@@ -106,32 +129,35 @@ class Car{
                 this.angle-=0.03*flip;
             }
         }
-        if(Math.abs(this.speed) > this.maxSpeed){
-            this.speed = (this.speed/Math.abs(this.speed))*this.maxSpeed;
-        }
-        this.x -= Math.sin(this.angle)*this.speed;
-        this.y -= Math.cos(this.angle)*this.speed;
-        if (this.speed != 0){
-            this.speed = (this.speed/Math.abs(this.speed))*(Math.abs(this.speed) - this.friction);
-        }
-        if (Math.abs(this.speed) < this.friction){
-            this.speed = 0;
-        }
+
+        this.x-=Math.sin(this.angle)*this.speed;
+        this.y-=Math.cos(this.angle)*this.speed;
     }
+
     draw(context, color, sensorDraw = false){
         if (this.isDamaged){
             context.fillStyle = "gray";
         } else{
             context.fillStyle = color;
         }
+        context.save();
+        context.translate(this.x, this.y);
+        context.rotate(-this.angle);
         context.beginPath();
         // console.log(this.polygon);
-        context.moveTo(this.polygon[0].x, this.polygon[0].y);
-        for (let i=1; i<this.polygon.length; ++i){
-            context.lineTo(this.polygon[i].x, this.polygon[i].y);
-        }
+        // context.moveTo(this.polygon[0].x, this.polygon[0].y);
+        // for (let i=1; i<this.polygon.length; ++i){
+        //     context.lineTo(this.polygon[i].x, this.polygon[i].y);
+        // }
+        context.rect(
+            -this.width/2,
+            -this.height/2,
+            this.width,
+            this.height
+        )
 
         context.fill();
+        context.restore();
         if (this.sensor && sensorDraw){
             this.sensor.draw(context);
         }
