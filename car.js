@@ -6,21 +6,21 @@ class Car{
         this.width = width;
         this.speed = 0.0;
         this.maxSpeed = maxSpeed;
-        this.angle = 0.00;
+        this.angle = -0.70;
         this.increaseAngle = 0.02;
         this.acceleration = 0.2;
         // this.polygon = [];
         this.isDamaged = false;
         this.friction = 0.05;
-        // this.type = type;
+        this.type = type;
         // this.carDistance = 0.00;
-        // if (this.type == "KEY"){  
-        //     this.sensor = new Sensor(this);
-        //     this.brain = new NeuralNetwork([
-        //         this.sensor.rayCount, 6, 4
-        //     ]);
-        // }
-        this.sensor = new Sensor(this);
+        if (this.type == "KEY"){  
+            this.sensor = new Sensor(this);
+            // this.brain = new NeuralNetwork([
+            //     this.sensor.rayCount, 6, 4
+            // ]);
+        }
+        // this.sensor = new Sensor(this);
         this.control = new Control(type);
         this.time = 1;
     }
@@ -139,24 +139,24 @@ class Car{
         } else{
             context.fillStyle = color;
         }
-        context.save();
-        context.translate(this.x, this.y);
-        context.rotate(-this.angle);
+        // context.save();
+        // context.translate(this.x, this.y);
+        // context.rotate(-this.angle);
         context.beginPath();
         // console.log(this.polygon);
-        // context.moveTo(this.polygon[0].x, this.polygon[0].y);
-        // for (let i=1; i<this.polygon.length; ++i){
-        //     context.lineTo(this.polygon[i].x, this.polygon[i].y);
-        // }
-        context.rect(
-            -this.width/2,
-            -this.height/2,
-            this.width,
-            this.height
-        )
+        context.moveTo(this.polygon[0].x, this.polygon[0].y);
+        for (let i=1; i<this.polygon.length; ++i){
+            context.lineTo(this.polygon[i].x, this.polygon[i].y);
+        }
+        // context.rect(
+        //     -this.width/2,
+        //     -this.height/2,
+        //     this.width,
+        //     this.height
+        // )
 
         context.fill();
-        context.restore();
+        // context.restore();
         if (this.sensor && sensorDraw){
             this.sensor.draw(context);
         }

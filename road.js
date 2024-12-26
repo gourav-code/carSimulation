@@ -18,9 +18,7 @@ class Road{
         const laneWidth = this.width/this.laneCount;
         const laneCenterRadius = this.innerRadius + laneWidth/2 + (index%2)* laneWidth;
 
-        const tmp = {y: this.centerY - laneCenterRadius*Math.cos(theta*Math.PI/180), x: this.centerX - laneCenterRadius*Math.sin(theta*Math.PI/180)}
-        // console.log(tmp);
-        return tmp;
+        return [this.centerX - laneCenterRadius*Math.sin(theta*Math.PI/180), this.centerY - laneCenterRadius*Math.cos(theta*Math.PI/180)];
     }
 
     draw(ctx){

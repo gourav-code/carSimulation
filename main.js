@@ -7,7 +7,7 @@ const context = canvas.getContext("2d");
 const road = new Road(canvas.width/2, 350);
 // const n = 100;
 let initialCarPosition = road.getLaneCenter(0 , 45);
-const car = new Car(initialCarPosition.x, initialCarPosition.y, 30, 50, "KEY");
+const car = new Car( ...initialCarPosition, 30, 50, "KEY");
 // const cars = testingCars(n);
 // let bestCar = cars[0];
 
@@ -28,9 +28,7 @@ const car = new Car(initialCarPosition.x, initialCarPosition.y, 30, 50, "KEY");
 //     localStorage.removeItem("bestBrain");
 // }
 
-// const traffic = [
-//     new Car( initialCarPosition.x + 50, initialCarPosition.y + 50, 30, 50, "DUMMY", 2)
-// ];
+const trafficGreen = new Car( ...road.getLaneCenter(1 , 45), 30, 50, "DUMMY", 2);
 // console.log(window.innerHeight);
 
 // function testingCars(n=1){
@@ -45,10 +43,7 @@ const car = new Car(initialCarPosition.x, initialCarPosition.y, 30, 50, "KEY");
 // }
 function animate(){
 
-    // for(let i=0; i<traffic.length; ++i){
-    //     traffic[i].update(road.border, []);
-    // }
-
+    trafficGreen.update(road.border);
     // bestCar = cars.find(
     //     tmp=>-1*tmp.y == Math.max(...cars.map(c=>-1*c.y))
     // );
@@ -64,6 +59,7 @@ function animate(){
     road.draw(context);
     // context.globalAlpha = 0.2;
     car.draw(context, "red", true);
+    trafficGreen.draw(context, "green");
     // for(let i=0; i< cars.length; ++i){
     //     cars[i].draw(context, "red");
     // }

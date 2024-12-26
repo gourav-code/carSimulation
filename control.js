@@ -5,14 +5,14 @@ class Control{
         this.right = false;
         this.reverse = false;
         
-        this.#addKeyboardListeners();
-        // if(type == "KEY"){
-        //     this.#addKeyboardListeners();
-        // } else{
-        //     this.forward = true;
-        //     this.left = true;
-        //     this.right = true;
-        // }
+        // this.#addKeyboardListeners();
+        if(type == "KEY"){
+            this.#addKeyboardListeners();
+        } else{
+            this.forward = true;
+            this.left = true;
+            this.right = true;
+        }
         
     }
     #addKeyboardListeners(){
