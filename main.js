@@ -60,10 +60,10 @@ function animate(){
     // }
     
     context.save();
-    // context.translate(0, -bestCar.y+canvas.height*0.7);
+    context.translate(-car.x+canvas.width*0.2, -car.y+canvas.height*0.7);
     road.draw(context);
     // context.globalAlpha = 0.2;
-    car.draw(context, "red");
+    car.draw(context, "red", true);
     // for(let i=0; i< cars.length; ++i){
     //     cars[i].draw(context, "red");
     // }

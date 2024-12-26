@@ -7,6 +7,7 @@ class Car{
         this.speed = 0.0;
         this.maxSpeed = maxSpeed;
         this.angle = 0.00;
+        this.increaseAngle = 0.02;
         this.acceleration = 0.2;
         // this.polygon = [];
         this.isDamaged = false;
@@ -33,6 +34,7 @@ class Car{
         }        
         //sensor
         if(this.sensor){
+            // console.log("hi sensor");
             this.sensor.update(roadBorder, traffic);
             // const offset = this.sensor.reading.map(tmp=> tmp==null?0:1-tmp.offset);
             // const outputs = NeuralNetwork.feedForward(offset, this.brain);
@@ -87,10 +89,7 @@ class Car{
             x: this.x + Math.sin(-alpha - this.angle) * radius,
             y: this.y - Math.cos(-alpha - this.angle) * radius,
         });
-        if(this.time == 1){
-            console.log(points);
-            this.time = 0;
-        }
+        
         
         return points;
     }
@@ -123,10 +122,10 @@ class Car{
         if(this.speed!=0){
             const flip=this.speed>0?1:-1;
             if(this.control.left){
-                this.angle+=0.03*flip;
+                this.angle+= this.increaseAngle*flip;
             }
             if(this.control.right){
-                this.angle-=0.03*flip;
+                this.angle-=this.increaseAngle*flip;
             }
         }
 

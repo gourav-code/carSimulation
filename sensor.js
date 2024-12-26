@@ -6,9 +6,11 @@ class Sensor{
         this.raySpread = Math.PI/2;
         this.rays = [];
         this.reading = [];
+        // console.log("hi from sensor file");
     }
     update(roadBorders, traffic){
         this.#rayCasting();
+        // console.log(this.rays);
         this.reading = [];
         for (let i=0; i< this.rays.length; ++i){
             this.reading.push(
@@ -17,7 +19,7 @@ class Sensor{
         }
 
     }
-    #getreading(ray, roadBorders, traffic){
+    #getreading(ray, roadBorders, traffic = []){
         let touches = [];
         for (let i=0; i< roadBorders.length; ++i){
             const touch = lineSegmentCircleIntersection(
