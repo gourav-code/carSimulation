@@ -5,9 +5,7 @@ class Car{
 
         this.circleX = circleX;
         this.circleY = circleY;
-        console.log(this.x, this.y);
         this.movementCircleRadius = Math.hypot(Math.abs(this.x-this.circleX), Math.abs(this.y-this.circleY));
-        console.log(this.movementCircleRadius, type);
         this.height = height;   //car width (x axis)
         this.width = width;
         this.speed = 0.0;
@@ -20,15 +18,14 @@ class Car{
         this.isDamaged = false;
         this.friction = 0.05;
         this.type = type;
-        // this.carDistance = 0.00;
+        this.carDistance = 0.00;
         if (this.type == "KEY"){  
             this.sensor = new Sensor(this);
             this.control = new Control(type);
-            // this.brain = new NeuralNetwork([
-            //     this.sensor.rayCount, 6, 4
-            // ]);
+            this.brain = new NeuralNetwork([
+                this.sensor.rayCount, 6, 4
+            ]);
         }
-        // this.sensor = new Sensor(this);
         
         this.time = 1;
     }
@@ -44,13 +41,13 @@ class Car{
         if(this.sensor){
             // console.log("hi sensor");
             this.sensor.update(roadBorder, traffic);
-            // const offset = this.sensor.reading.map(tmp=> tmp==null?0:1-tmp.offset);
-            // const outputs = NeuralNetwork.feedForward(offset, this.brain);
+            const offset = this.sensor.reading.map(tmp=> tmp==null?0:1-tmp.offset);
+            const outputs = NeuralNetwork.feedForward(offset, this.brain);
 
-            // this.control.forward = outputs[0];
-            // this.control.left = outputs[1];
-            // this.control.right = outputs[2];
-            // this.control.reverse = outputs[3];
+            this.control.forward = outputs[0];
+            this.control.left = outputs[1];
+            this.control.right = outputs[2];
+            this.control.reverse = outputs[3];
 
         }
     }
@@ -160,16 +157,13 @@ class Car{
     
             this.x-=Math.sin(this.angle)*this.speed;
             this.y-=Math.cos(this.angle)*this.speed;
+            this.carDistance = -1*this.angle*(Math.PI/180)*this.speed;
         } else {
-            this.theta += 0.002;
+            this.theta += 0.005;
             
             this.x = Math.cos(this.theta)*this.movementCircleRadius + this.circleX;
             this.y = Math.sin(this.theta)*this.movementCircleRadius + this.circleY;
             this.angle =  Math.atan2(this.y - this.circleY, this.x - this.circleX) + Math.PI/2;
-            if(this.time){
-                console.log(this.x, this.y);
-                this.time -= 1;
-            }
             
         }
         
